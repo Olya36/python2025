@@ -77,13 +77,21 @@ async def react_keyboard(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     query = update.callback_query
 
     if query.data == 'Раз':
-        return await one(update, context)
+        return await react_one(update, context)
     elif query.data == 'Два':
         return await two(update, context)
     elif query.data == 'Три':
         return await three(update, context)
     elif query.data == 'Четыре':
         return await four(update, context)
+    elif query.data == 'Пять':
+        return await five(update, context)
+    elif query.data == 'Шесть':
+        return await six(update, context)
+    elif query.data == 'Городской транспорт':
+        return await one_one(update, context)
+    elif query.data == 'Водный транспорт':
+        return await one_two(update, context)
 
     buttons = [
         [InlineKeyboardButton('Раз', callback_data='Раз'),
@@ -151,12 +159,93 @@ async def four(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         text=text
     )
 
+
+async def five(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Выведет ответ на команду 'Пять'"""
+    user = update.effective_user
+    log.info(f'Функция four вызвана пользователем {user}\n')
+
+    query = update.callback_query
+
+    text = 'Бегемот'
+    await query.edit_message_text(
+        text=text
+    )
+
+async def six(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Выведет ответ на команду 'Шесть'"""
+    user = update.effective_user
+    log.info(f'Функция four вызвана пользователем {user}\n')
+
+    query = update.callback_query
+
+    text = 'Ай-яй-яй'
+    await query.edit_message_text(
+        text=text
+    )
+
+async def say_one(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Показывает inline-клавиатуру"""
+    user = update.effective_user
+    log.info(f'Функция ыфн_one вызвана пользователем {user}')
+
+    buttons = [
+        [InlineKeyboardButton('Городской транспорт', callback_data='Городской транспорт'),
+         InlineKeyboardButton('Водный транспорт', callback_data='Водный транспорт')]
+    ]
+    keyboard = InlineKeyboardMarkup(buttons)
+
+async def react_one(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Выдает ответ на кнопку 'Раз'"""
+    user = update.effective_user
+    log.info(f'Функция react_one вызвана пользователем {user}')
+
+    query = update.callback_query
+
+
+
+    buttons = [
+        [InlineKeyboardButton('Городской транспорт', callback_data='Городской транспорт'),
+         InlineKeyboardButton('Водный транспорт', callback_data='Водный транспорт')]
+    ]
+    keyboard = InlineKeyboardMarkup(buttons)
+
+    await query.edit_message_text(
+        text=query.data,
+        reply_markup=keyboard
+    )
+
+async def one_one(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Выдает ответ на кнопку 'Городской транспорт'"""
+    user = update.effective_user
+    log.info(f'Функция one_one вызвана пользователем {user}')
+
+    query = update.callback_query
+
+    text = 'Машина'
+    await query.edit_message_text(
+        text=text
+    )
+
+async def one_two(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Выдает ответ на кнопку 'Волдный транспорт'"""
+    user = update.effective_user
+    log.info(f'Функция one_one вызвана пользователем {user}')
+
+    query = update.callback_query
+
+    text = 'Корабль'
+    await query.edit_message_text(
+        text=text
+    )
+
 app = ApplicationBuilder().token(TOKEN).build()
 
 # регистрация обработчиков
 app.add_handler(CommandHandler("hello", hello))
 app.add_handler(CommandHandler(["help", "start"], say_help))
 app.add_handler(CommandHandler("keyboard", say_keyboard))
+app.add_handler(CommandHandler("one", say_one))
 app.add_handler(CallbackQueryHandler(react_keyboard))
 app.add_handler(MessageHandler(filters.ALL, echo))
 
