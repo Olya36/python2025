@@ -5,11 +5,11 @@ from telegram.constants import ParseMode
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, CallbackQueryHandler, filters
 
 from config import TOKEN
-
+from application_hander import events_application_handler
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s | %(levelname)s | %(module)-15s [%(lineno)4d] - %(message)s'
+    format='%(asctime)s | %(levelname)-10s | %(module)-15s [%(lineno)4d] - %(message)s'
 )
 logging.getLogger('httpx').setLevel(logging.WARNING)
 log = logging.getLogger(__name__)
@@ -33,6 +33,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def say_help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Рассказывает, какие есть возможности у бота"""
     user = update.effective_user
+    message = update.message
     log.info(f'Функция help вызвана пользователем {user}\n')
 
     text = [
@@ -334,6 +335,21 @@ async def two_two_answer(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         text=text
     )
 
+async def say_three(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Показывает inline-клавиатуру"""
+    user = update.effective_user
+    log.info(f'Функция say_three вызвана пользователем {user}')
+
+    buttons = [
+        [InlineKeyboardButton('', callback_data=''),
+         InlineKeyboardButton('Физика', callback_data='Физика')]
+    ]
+    keyboard = InlineKeyboardMarkup(buttons)
+
+    await update.message.reply_text(
+        text='Какой школьный предмет изучает технологии?',
+        reply_markup=keyboard
+    )
 
 app = ApplicationBuilder().token(TOKEN).build()
 
@@ -342,6 +358,7 @@ app.add_handler(CommandHandler("hello", hello))
 app.add_handler(CommandHandler(["help", "start"], say_help))
 app.add_handler(CommandHandler("keyboard", say_keyboard))
 app.add_handler(CommandHandler("one", say_one))
+app.add_handler(events_application_handler)
 app.add_handler(CallbackQueryHandler(react_keyboard))
 app.add_handler(MessageHandler(filters.ALL, echo))
 
